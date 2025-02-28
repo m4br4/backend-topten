@@ -129,6 +129,30 @@ El seed crea dos usuarios por defecto:
    - Email: user@example.com
    - Contraseña: user123
 
+## Pruebas con Postman
+
+Para probar la API con Postman, sigue estos pasos:
+
+1. Importa la colección de Postman incluida en el archivo `postman_collection.json`.
+
+2. Crea un entorno en Postman con las siguientes variables:
+   - `baseUrl`: http://localhost:3000
+   - `authToken`: (se llenará automáticamente al hacer login)
+   - `userId`: (se llenará automáticamente al hacer login)
+   - `roleId`: (se llenará automáticamente al obtener roles)
+   - `permissionId`: (se llenará automáticamente al obtener permisos)
+
+3. Flujo de prueba recomendado:
+   - Inicia sesión con el usuario administrador usando el endpoint `Auth/Login`
+   - Obtén la lista de roles con `Roles/Get All Roles` (esto guardará automáticamente un roleId)
+   - Obtén la lista de permisos con `Permissions/Get All Permissions` (esto guardará automáticamente un permissionId)
+   - Ahora puedes probar el resto de endpoints
+
+4. Para probar con el usuario normal:
+   - Cierra sesión con `Auth/Logout`
+   - Inicia sesión con el usuario normal (user@example.com/user123)
+   - Verifica que no puedes acceder a los endpoints protegidos para administradores
+
 ## Licencia
 
 ISC

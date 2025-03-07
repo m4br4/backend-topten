@@ -10,30 +10,29 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum UserRoleEnum {
+  USER
+  ADMIN
+  SUPPORT
+}
+
 model User {
-  id             String    @id @default(uuid())
-  email          String    @unique
+  id             String          @id @default(uuid())
+  email          String          @unique
   password       String
   firstName      String?
   lastName       String?
   profilePicture String?
-  isActive       Boolean   @default(true)
-  createdAt      DateTime  @default(now())
-  updatedAt      DateTime  @updatedAt
-  role           Role      @relation(fields: [roleId], references: [id])
-  roleId         String
+  isActive       Boolean         @default(true)
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+  role           UserRoleEnum    @default(USER)
+  news           News[]
+  comments       Comment[]
   sessions       Session[]
 }
 
-model Role {
-  id          String       @id @default(uuid())
-  name        String       @unique
-  description String?
-  createdAt   DateTime     @default(now())
-  updatedAt   DateTime     @updatedAt
-  users       User[]
-  permissions Permission[]
-}
+
 
 model Permission {
   id          String   @id @default(uuid())
@@ -52,4 +51,60 @@ model Session {
   userId    String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+
+model News {
+  id          String    @id @default(uuid())
+  title       String
+  content     String
+  summary     String
+  isFeatured  Boolean   @default(false)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  authorId    String
+  author      User      @relation(fields: [authorId], references: [id])
+  comments    Comment[]
+  media       Media[]
+  views       Int       @default(0)
+
+  @@map("news")
+}
+
+model Comment {
+  id        String   @id @default(uuid())
+  content   String
+  sticker   String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  newsId    String
+  news      News     @relation(fields: [newsId], references: [id])
+  likes     Like[]
+
+  @@map("comments")
+}
+
+model Media {
+  id        String   @id @default(uuid())
+  url       String
+  type      String
+  caption   String?
+  createdAt DateTime @default(now())
+  newsId    String
+  news      News     @relation(fields: [newsId], references: [id])
+
+  @@map("media")
+}
+
+model Like {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  userId    String
+  commentId String
+  comment   Comment  @relation(fields: [commentId], references: [id])
+
+  @@unique([userId, commentId])
+  @@map("likes")
 }

@@ -27,12 +27,14 @@ const authRoutes = require('./routes/auth.routes');
 const userRoutes = require('./routes/user.routes');
 const roleRoutes = require('./routes/role.routes');
 const permissionRoutes = require('./routes/permission.routes');
+const healthRoutes = require('./routes/health.routes');
 
 // Usar rutas
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/roles', roleRoutes);
 app.use('/api/permissions', permissionRoutes);
+app.use('/api/health', healthRoutes);
 
 // Ruta de prueba
 app.get('/', (req, res) => {

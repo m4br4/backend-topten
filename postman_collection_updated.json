@@ -1,0 +1,561 @@
+{
+    "info": {
+      "name": "Backend Node.js Prisma PostgreSQL",
+      "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+      "_postman_id": "a1b2c3d4-e5f6-g7h8-i9j0-k1l2m3n4o5p6",
+      "description": "Colección para probar la API del backend con Node.js, Prisma y PostgreSQL"
+    },
+    "item": [
+      {
+        "item": [
+          {
+            "name": "Health Check",
+            "request": {
+              "url": {
+                "raw": "{{baseUrl}}/api/health",
+                "host": ["{{baseUrl}}"],
+                "path": ["api", "health"]
+              },
+              "method": "GET",
+              "description": "Verificar el estado del sistema"
+            },
+            "response": []
+          },
+          {
+            "name": "Register",
+            "request": {
+              "url": {
+                "raw": "{{baseUrl}}/api/auth/register",
+                "host": ["{{baseUrl}}"],
+                "path": ["api", "auth", "register"]
+              },
+              "body": {
+                "raw": "{\n    \"email\": \"test@example.com\",\n    \"password\": \"password123\",\n    \"firstName\": \"Test\",\n    \"lastName\": \"User\",\n    \"roleId\": \"{{roleId}}\"\n}",
+                "mode": "raw"
+              },
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "method": "POST",
+              "description": "Registrar un nuevo usuario"
+            },
+            "response": []
+          },
+          {
+            "name": "Login",
+            "event": [
+              {
+                "listen": "test",
+                "script": {
+                  "exec": [
+                    "var jsonData = pm.response.json();",
+                    "if (jsonData && jsonData.token) {",
+                    "    pm.environment.set(\"authToken\", jsonData.token);",
+                    "    pm.environment.set(\"userId\", jsonData.user.id);",
+                    "}"
+                  ],
+                  "type": "text/javascript"
+                }
+              }
+            ],
+            "request": {
+              "url": {
+                "raw": "{{baseUrl}}/api/auth/login",
+                "host": ["{{baseUrl}}"],
+                "path": ["api", "auth", "login"]
+              },
+              "body": {
+                "raw": "{\n    \"email\": \"admin@example.com\",\n    \"password\": \"admin123\"\n}",
+                "mode": "raw"
+              },
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "method": "POST",
+              "description": "Iniciar sesión y obtener token JWT"
+            },
+            "response": []
+          },
+          {
+            "name": "Me",
+            "request": {
+              "url": {
+                "raw": "{{baseUrl}}/api/auth/me",
+                "host": ["{{baseUrl}}"],
+                "path": ["api", "auth", "me"]
+              },
+              "header": [
+                {
+                  "key": "Authorization",
+                  "value": "Bearer {{authToken}}"
+                }
+              ],
+              "method": "GET",
+              "description": "Obtener información del usuario actual"
+            },
+            "response": []
+          },
+          {
+            "name": "Logout",
+            "request": {
+              "url": {
+                "raw": "{{baseUrl}}/api/auth/logout",
+                "host": ["{{baseUrl}}"],
+                "path": ["api", "auth", "logout"]
+              },
+              "body": {
+                "raw": "{\n    \"token\": \"{{authToken}}\"\n}",
+                "mode": "raw"
+              },
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "method": "POST",
+              "description": "Cerrar sesión"
+            },
+            "response": []
+          }
+        ],
+        "name": "Auth",
+        "description": "Endpoints relacionados con la autenticación"
+      },
+      {
+        "item": [
+          {
+            "name": "Get All Users",
+            "request": {
+              "url": {
+                "raw": "{{baseUrl}}/api/users",
+                "host": ["{{baseUrl}}"],
+                "path": ["api", "users"]
+              },
+              "header": [
+                {
+                  "key": "Authorization",
+                  "value": "Bearer {{authToken}}"
+                }
+              ],
+              "method": "GET",
+              "description": "Obtener todos los usuarios (requiere rol admin)"
+            },
+            "response": []
+          },
+          {
+            "name": "Get User by ID",
+            "request": {
+              "url": {
+                "raw": "{{baseUrl}}/api/users/{{userId}}",
+                "host": ["{{baseUrl}}"],
+                "path": ["api", "users", "{{userId}}"]
+              },
+              "header": [
+                {
+                  "key": "Authorization",
+                  "value": "Bearer {{authToken}}"
+                }
+              ],
+              "method": "GET",
+              "description": "Obtener un usuario por su ID"
+            },
+            "response": []
+          },
+          {
+            "name": "Create User",
+            "request": {
+              "url": {
+                "raw": "{{baseUrl}}/api/users",
+                "host": ["{{baseUrl}}"],
+                "path": ["api", "users"]
+              },
+              "body": {
+                "raw": "{\n    \"email\": \"newuser@example.com\",\n    \"password\": \"password123\",\n    \"firstName\": \"New\",\n    \"lastName\": \"User\",\n    \"roleId\": \"{{roleId}}\",\n    \"isActive\": true\n}",
+                "mode": "raw"
+              },
+              "header": [
+                {
+                  "key": "Authorization",
+                  "value": "Bearer {{authToken}}"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "method": "POST",
+              "description": "Crear un nuevo usuario (requiere rol admin)"
+            },
+            "response": []
+          },
+          {
+            "name": "Update User",
+            "request": {
+              "url": {
+                "raw": "{{baseUrl}}/api/users/{{userId}}",
+                "host": ["{{baseUrl}}"],
+                "path": ["api", "users", "{{userId}}"]
+              },
+              "body": {
+                "raw": "{\n    \"firstName\": \"Updated\",\n    \"lastName\": \"User\",\n    \"email\": \"updated@example.com\"\n}",
+                "mode": "raw"
+              },
+              "header": [
+                {
+                  "key": "Authorization",
+                  "value": "Bearer {{authToken}}"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "method": "PUT",
+              "description": "Actualizar un usuario"
+            },
+            "response": []
+          },
+          {
+            "name": "Change Password",
+            "request": {
+              "url": {
+                "raw": "{{baseUrl}}/api/users/{{userId}}/change-password",
+                "host": ["{{baseUrl}}"],
+                "path": ["api", "users", "{{userId}}", "change-password"]
+              },
+              "body": {
+                "raw": "{\n    \"currentPassword\": \"password123\",\n    \"newPassword\": \"newpassword123\"\n}",
+                "mode": "raw"
+              },
+              "header": [
+                {
+                  "key": "Authorization",
+                  "value": "Bearer {{authToken}}"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "method": "PUT",
+              "description": "Cambiar la contraseña de un usuario"
+            },
+            "response": []
+          },
+          {
+            "name": "Delete User",
+            "request": {
+              "url": {
+                "raw": "{{baseUrl}}/api/users/{{userId}}",
+                "host": ["{{baseUrl}}"],
+                "path": ["api", "users", "{{userId}}"]
+              },
+              "header": [
+                {
+                  "key": "Authorization",
+                  "value": "Bearer {{authToken}}"
+                }
+              ],
+              "method": "DELETE",
+              "description": "Eliminar un usuario (requiere rol admin)"
+            },
+            "response": []
+          }
+        ],
+        "name": "Users",
+        "description": "Endpoints relacionados con la gestión de usuarios"
+      },
+      {
+        "item": [
+          {
+            "name": "Get All Roles",
+            "event": [
+              {
+                "listen": "test",
+                "script": {
+                  "exec": [
+                    "var jsonData = pm.response.json();",
+                    "if (jsonData && jsonData.length > 0) {",
+                    "    pm.environment.set(\"roleId\", jsonData[0].id);",
+                    "}"
+                  ],
+                  "type": "text/javascript"
+                }
+              }
+            ],
+            "request": {
+              "url": {
+                "raw": "{{baseUrl}}/api/roles",
+                "host": ["{{baseUrl}}"],
+                "path": ["api", "roles"]
+              },
+              "header": [
+                {
+                  "key": "Authorization",
+                  "value": "Bearer {{authToken}}"
+                }
+              ],
+              "method": "GET",
+              "description": "Obtener todos los roles (requiere rol admin)"
+            },
+            "response": []
+          },
+          {
+            "name": "Get Role by ID",
+            "request": {
+              "url": {
+                "raw": "{{baseUrl}}/api/roles/{{roleId}}",
+                "host": ["{{baseUrl}}"],
+                "path": ["api", "roles", "{{roleId}}"]
+              },
+              "header": [
+                {
+                  "key": "Authorization",
+                  "value": "Bearer {{authToken}}"
+                }
+              ],
+              "method": "GET",
+              "description": "Obtener un rol por su ID (requiere rol admin)"
+            },
+            "response": []
+          },
+          {
+            "name": "Create Role",
+            "request": {
+              "url": {
+                "raw": "{{baseUrl}}/api/roles",
+                "host": ["{{baseUrl}}"],
+                "path": ["api", "roles"]
+              },
+              "body": {
+                "raw": "{\n    \"name\": \"editor\",\n    \"description\": \"Editor con permisos limitados\",\n    \"permissionIds\": [\"{{permissionId}}\"]\n}",
+                "mode": "raw"
+              },
+              "header": [
+                {
+                  "key": "Authorization",
+                  "value": "Bearer {{authToken}}"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "method": "POST",
+              "description": "Crear un nuevo rol (requiere rol admin)"
+            },
+            "response": []
+          },
+          {
+            "name": "Update Role",
+            "request": {
+              "url": {
+                "raw": "{{baseUrl}}/api/roles/{{roleId}}",
+                "host": ["{{baseUrl}}"],
+                "path": ["api", "roles", "{{roleId}}"]
+              },
+              "body": {
+                "raw": "{\n    \"name\": \"editor-updated\",\n    \"description\": \"Editor con permisos actualizados\",\n    \"permissionIds\": [\"{{permissionId}}\"]\n}",
+                "mode": "raw"
+              },
+              "header": [
+                {
+                  "key": "Authorization",
+                  "value": "Bearer {{authToken}}"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "method": "PUT",
+              "description": "Actualizar un rol (requiere rol admin)"
+            },
+            "response": []
+          },
+          {
+            "name": "Delete Role",
+            "request": {
+              "url": {
+                "raw": "{{baseUrl}}/api/roles/{{roleId}}",
+                "host": ["{{baseUrl}}"],
+                "path": ["api", "roles", "{{roleId}}"]
+              },
+              "header": [
+                {
+                  "key": "Authorization",
+                  "value": "Bearer {{authToken}}"
+                }
+              ],
+              "method": "DELETE",
+              "description": "Eliminar un rol (requiere rol admin)"
+            },
+            "response": []
+          }
+        ],
+        "name": "Roles",
+        "description": "Endpoints relacionados con la gestión de roles"
+      },
+      {
+        "item": [
+          {
+            "name": "Get All Permissions",
+            "event": [
+              {
+                "listen": "test",
+                "script": {
+                  "exec": [
+                    "var jsonData = pm.response.json();",
+                    "if (jsonData && jsonData.length > 0) {",
+                    "    pm.environment.set(\"permissionId\", jsonData[0].id);",
+                    "}"
+                  ],
+                  "type": "text/javascript"
+                }
+              }
+            ],
+            "request": {
+              "url": {
+                "raw": "{{baseUrl}}/api/permissions",
+                "host": ["{{baseUrl}}"],
+                "path": ["api", "permissions"]
+              },
+              "header": [
+                {
+                  "key": "Authorization",
+                  "value": "Bearer {{authToken}}"
+                }
+              ],
+              "method": "GET",
+              "description": "Obtener todos los permisos (requiere rol admin)"
+            },
+            "response": []
+          },
+          {
+            "name": "Get Permission by ID",
+            "request": {
+              "url": {
+                "raw": "{{baseUrl}}/api/permissions/{{permissionId}}",
+                "host": ["{{baseUrl}}"],
+                "path": ["api", "permissions", "{{permissionId}}"]
+              },
+              "header": [
+                {
+                  "key": "Authorization",
+                  "value": "Bearer {{authToken}}"
+                }
+              ],
+              "method": "GET",
+              "description": "Obtener un permiso por su ID (requiere rol admin)"
+            },
+            "response": []
+          },
+          {
+            "name": "Create Permission",
+            "request": {
+              "url": {
+                "raw": "{{baseUrl}}/api/permissions",
+                "host": ["{{baseUrl}}"],
+                "path": ["api", "permissions"]
+              },
+              "body": {
+                "raw": "{\n    \"name\": \"content:manage\",\n    \"description\": \"Permite gestionar contenido\"\n}",
+                "mode": "raw"
+              },
+              "header": [
+                {
+                  "key": "Authorization",
+                  "value": "Bearer {{authToken}}"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "method": "POST",
+              "description": "Crear un nuevo permiso (requiere rol admin)"
+            },
+            "response": []
+          },
+          {
+            "name": "Update Permission",
+            "request": {
+              "url": {
+                "raw": "{{baseUrl}}/api/permissions/{{permissionId}}",
+                "host": ["{{baseUrl}}"],
+                "path": ["api", "permissions", "{{permissionId}}"]
+              },
+              "body": {
+                "raw": "{\n    \"name\": \"content:manage-updated\",\n    \"description\": \"Permite gestionar contenido (actualizado)\"\n}",
+                "mode": "raw"
+              },
+              "header": [
+                {
+                  "key": "Authorization",
+                  "value": "Bearer {{authToken}}"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "method": "PUT",
+              "description": "Actualizar un permiso (requiere rol admin)"
+            },
+            "response": []
+          },
+          {
+            "name": "Delete Permission",
+            "request": {
+              "url": {
+                "raw": "{{baseUrl}}/api/permissions/{{permissionId}}",
+                "host": ["{{baseUrl}}"],
+                "path": ["api", "permissions", "{{permissionId}}"]
+              },
+              "header": [
+                {
+                  "key": "Authorization",
+                  "value": "Bearer {{authToken}}"
+                }
+              ],
+              "method": "DELETE",
+              "description": "Eliminar un permiso (requiere rol admin)"
+            },
+            "response": []
+          }
+        ],
+        "name": "Permissions",
+        "description": "Endpoints relacionados con la gestión de permisos"
+      }
+    ],
+    "event": [
+      {
+        "listen": "prerequest",
+        "script": {
+          "exec": [""],
+          "type": "text/javascript"
+        }
+      },
+      {
+        "listen": "test",
+        "script": {
+          "exec": [""],
+          "type": "text/javascript"
+        }
+      }
+    ],
+    "variable": [
+      {
+        "key": "baseUrl",
+        "type": "string",
+        "value": "http://localhost:5000"
+      }
+    ]
+  }
